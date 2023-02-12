@@ -1,0 +1,3 @@
+---
+wordpress_version: '6.0.2'
+wordpress_install_directory: /var/www/html

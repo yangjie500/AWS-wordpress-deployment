@@ -1,0 +1,68 @@
+---
+- name: Retrieve EFS ID
+  shell: aws efs describe-file-systems --region us-east-1 --query "FileSystems[?CreationToken=='my-efs'].FileSystemId" | grep fs | sed 's/[\"\ ]//g'
+  register: efsID
+  ignore_errors: True
+
+- name: Install efs-client
+  yum:  
+    name: amazon-efs-utils
+
+# - name: Make a temp directory 
+#   file:
+#       state: directory
+#       path: "/tmp/wp-content"
+#       owner: nginx
+#       group: nginx
+#       mode: 0755
+
+- name: Check NFS was mounted for the first time
+  stat:
+    path: /var/www/html/wordpress/wp-content/done.txt
+  register: not_first_time
+
+- name: Copy wp-content folder to the temporary folder 
+  synchronize:
+    src: /var/www/html/wordpress/wp-content
+    dest: /tmp
+  delegate_to: localhost
+  when: not_first_time.stat.exists == False
+
+- name: Remove the original wp-content
+  file:
+    state: absent
+    path: /var/www/html/wordpress/wp-content/
+  when: not_first_time.stat.exists == False
+
+- name: Create wp-content back
+  file:
+    state: directory
+    path: /var/www/html/wordpress/wp-content
+    owner: nginx
+    group: nginx
+    mode: 0755
+  when: not_first_time.stat.exists == False
+
+- name: Mount EFS
+  mount: 
+    path: /var/www/html/wordpress/wp-content
+    src: "{{ efsID.stdout }}:/"
+    fstype: efs
+    opts: _netdev,tls,iam
+    state: mounted
+
+- name: Copy wp-content item to the mounted wp-content folder 
+  synchronize:
+    src: /tmp/wp-content/
+    dest: /var/www/html/wordpress/wp-content/
+  delegate_to: localhost
+  when: not_first_time.stat.exists == False
+
+- name: create done.txt to wp-content to finishied the initialization of EFS
+  file:
+    path: /var/www/html/wordpress/wp-content/done.txt
+    owner: nginx
+    group: nginx
+    mode: '0644'
+    state: touch
+  when: not_first_time.stat.exists == False

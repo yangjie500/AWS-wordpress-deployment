@@ -1,0 +1,20 @@
+---
+- name: Examples simple - Configure application
+  hosts: localhost
+  connection: local
+  become: yes    
+  # roles:
+  #   - mountEFS  
+  pre_tasks:
+    - name: Update Package
+      yum: 
+        update_cache: yes
+  roles:
+    - php
+    - nginx
+    - wordpress
+    - lb_url
+    - mountEFS
+
+
+    

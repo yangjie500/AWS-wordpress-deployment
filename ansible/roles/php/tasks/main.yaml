@@ -1,0 +1,30 @@
+---
+- name: Enable php8.0
+  command: amazon-linux-extras enable php8.0
+
+- name: Clean yum metadata
+  command: yum clean metadata
+
+- name: Install php
+  yum:
+    name:
+      - php
+      - php-cli
+      - php-mysqlnd
+      - php-pdo
+      - php-common
+      - php-fpm
+      - php-gd
+      - php-mbstring
+      - php-xml
+      - php-dom
+      - php-intl
+      - php-simplexml
+    state: present
+
+- name: Start and Enabled PHP-FPM
+  service:
+    name: php-fpm
+    enabled: yes
+    state: started
+

@@ -1,0 +1,78 @@
+---
+- include_vars: tf_ansible_vars_file.yaml
+- name: Install pip and pre-req
+  yum:
+    name: 
+      - pip
+      - gcc
+    state: present
+
+- name: Install pre-req to allow installation of mysqlclient
+  yum:
+    name: 
+      - mysql-devel
+      - python3-devel
+    state: present
+
+- name: Install mysqlclient on PIP
+  pip:
+    name: mysqlclient
+
+- name: Select
+  community.mysql.mysql_query:
+    login_db: "{{ tf_database_name }}"
+    login_host: "{{ tf_rds_endpoint }}"
+    login_user: "{{ tf_username }}"
+    login_password: "{{ tf_password }}"
+    query: "SELECT option_value from wp_options where option_id = 1;"
+  register: test
+
+- debug:
+    var: test.query_result[0][0].option_value
+
+- name: Update wp_options
+  community.mysql.mysql_query:
+    login_db: "{{ tf_database_name }}"
+    login_host: "{{ tf_rds_endpoint }}"
+    login_user: "{{ tf_username }}"
+    login_password: "{{ tf_password }}"
+    query: "UPDATE wp_options SET option_value = replace(option_value, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com') where option_name = 'home' OR option_name = 'siteurl'; "
+  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+
+- name: Update wp_posts
+  community.mysql.mysql_query:
+    login_db: "{{ tf_database_name }}"
+    login_host: "{{ tf_rds_endpoint }}"
+    login_user: "{{ tf_username }}"
+    login_password: "{{ tf_password }}"
+    query: "UPDATE wp_posts SET post_content = replace(post_content, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com');"
+  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+
+- name: Update wp_posts GUID
+  community.mysql.mysql_query:
+    login_db: "{{ tf_database_name }}"
+    login_host: "{{ tf_rds_endpoint }}"
+    login_user: "{{ tf_username }}"
+    login_password: "{{ tf_password }}"
+    query: "UPDATE wp_posts SET guid = replace(guid, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com');"
+  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+
+- name: Update wp_postmeta
+  community.mysql.mysql_query:
+    login_db: "{{ tf_database_name }}"
+    login_host: "{{ tf_rds_endpoint }}"
+    login_user: "{{ tf_username }}"
+    login_password: "{{ tf_password }}"
+    query: "UPDATE wp_postmeta SET meta_value = replace(meta_value, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com');"
+  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+
+- name: Update wp_postmeta
+  community.mysql.mysql_query:
+    login_db: "{{ tf_database_name }}"
+    login_host: "{{ tf_rds_endpoint }}"
+    login_user: "{{ tf_username }}"
+    login_password: "{{ tf_password }}"
+    query: "UPDATE wp_comments SET comment_content = replace(comment_content, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com');"
+  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+
+

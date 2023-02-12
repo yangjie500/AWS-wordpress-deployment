@@ -1,0 +1,12 @@
+# Extra File
+extra
+
+# community collections file for ansible
+collections
+
+# inventory files
+inventory.ini
+
+# terraform 
+.terraform*
+terraform.*

@@ -1,0 +1,37 @@
+---
+# - name: Install Wordpress Prerequisites
+#   package:
+#     name: "{{ wordpress_packages }}"
+#     state: present
+#   tags: wordpress
+
+- include_vars: tf_ansible_vars_file.yaml
+
+- name: Download Wordpress
+  get_url:
+    url: https://wordpress.org/wordpress-{{ wordpress_version }}.tar.gz
+    dest: "{{ wordpress_install_directory }}"
+  changed_when: false
+
+- name: Unzipping wordpress
+  unarchive:
+    src: "{{ wordpress_install_directory }}/wordpress-{{ wordpress_version }}.tar.gz"
+    dest: "{{ wordpress_install_directory }}"
+    remote_src: true
+    owner: nginx
+    group: nginx
+    #creates: "{{ wordpress_install_directory }}"
+  
+- name: Remove wordpress.tar.gz file
+  file:
+    path: "{{ wordpress_install_directory }}/wordpress-{{ wordpress_version }}.tar.gz"
+    state: absent
+  changed_when: false
+
+- name: Config file for wordpress
+  template:
+    src: wp-config.php
+    dest: "{{ wordpress_install_directory }}/wordpress/wp-config.php"
+    owner: nginx
+    group: nginx
+    mode: '0644'
