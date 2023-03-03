@@ -48,4 +48,8 @@ Under /var/www/html/wordpress/wp-content/
 Create the following folder
 ```bash
 cd /var/www/html/wordpress/wp-content/
-mkdir /(YEAR)/(MONTH) -p
+mkdir uploads
+mkdir uploads/(YEAR)/(MONTH) -p
+chown nginx:nginx /var/www/html/wordpress/wp-content/uploads --recursive
+chmod '0755' /var/www/html/wordpress/wp-content/uploads -R
+```
