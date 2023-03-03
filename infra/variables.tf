@@ -25,19 +25,19 @@ variable "EC2_type" {
 variable "S3_name" {
   description = "S3 name"
   type = string
-  default = "???"
+  default = "my-ansible-bucket500"
 }
 
 variable "db_user" {
   description = "MySQL user"
   type = string
-  default = "???"
+  default = "admin123"
 }
 
 variable "db_password" {
   description = "MySQL password"
   type = string
-  default = "???"
+  default = "adminweewee123"
   sensitive = true
 }
 
