@@ -14,7 +14,17 @@ First log into AWS console and go IAM services to get API Key then configure usi
 ```bash
     aws configure
 ```
-under <span style="color:#49fb35">/infra/providers.tf</span> rename profile and region to what you have configure above
+under 
+<br>
+<b>/infra/providers.tf</b>
+<br>
+<b>/infra/ssm.tf resource local_file.tf_ansible_vars_file.provision</b>
+<br>
+rename profile and region to what you have configure above
+
+Configure your own database username and password etc... at 
+<br>
+<b>/infra/variables.tf</b>
 
 To Start
 ```bash
@@ -25,4 +35,17 @@ To Start
     terraform -chdir="infra" apply
 ```
 
-Configure your own database username and password etc... at <span style="color:#49fb35">/infra/variables.tf</span>
+
+
+## Apply AWS SSM again AFTER you install wordpress (ONLY FIRST TIME)
+Go the EC2 console under load balancer get LB_URL
+and install wordpress with your credential
+
+Go to AWS SSM under state manager reapply the Ansible playbook again
+
+## Note if you want to be able to upload photo 
+Under /var/www/html/wordpress/wp-content/
+Create the following folder
+```bash
+cd /var/www/html/wordpress/wp-content/
+mkdir /(YEAR)/(MONTH) -p

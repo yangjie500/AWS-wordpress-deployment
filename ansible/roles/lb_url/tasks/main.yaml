@@ -36,8 +36,8 @@
     login_host: "{{ tf_rds_endpoint }}"
     login_user: "{{ tf_username }}"
     login_password: "{{ tf_password }}"
-    query: "UPDATE wp_options SET option_value = replace(option_value, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com') where option_name = 'home' OR option_name = 'siteurl'; "
-  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+    query: "UPDATE wp_options SET option_value = replace(option_value, '{{test.query_result[0][0].option_value}}', '{{tf_lb_domain}}') where option_name = 'home' OR option_name = 'siteurl'; "
+  when: test.query_result[0][0].option_value != '{{tf_lb_domain}}'
 
 - name: Update wp_posts
   community.mysql.mysql_query:
@@ -45,8 +45,8 @@
     login_host: "{{ tf_rds_endpoint }}"
     login_user: "{{ tf_username }}"
     login_password: "{{ tf_password }}"
-    query: "UPDATE wp_posts SET post_content = replace(post_content, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com');"
-  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+    query: "UPDATE wp_posts SET post_content = replace(post_content, '{{test.query_result[0][0].option_value}}', '{{tf_lb_domain}}');"
+  when: test.query_result[0][0].option_value != '{{tf_lb_domain}}'
 
 - name: Update wp_posts GUID
   community.mysql.mysql_query:
@@ -54,8 +54,8 @@
     login_host: "{{ tf_rds_endpoint }}"
     login_user: "{{ tf_username }}"
     login_password: "{{ tf_password }}"
-    query: "UPDATE wp_posts SET guid = replace(guid, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com');"
-  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+    query: "UPDATE wp_posts SET guid = replace(guid, '{{test.query_result[0][0].option_value}}', '{{tf_lb_domain}}');"
+  when: test.query_result[0][0].option_value != '{{tf_lb_domain}}'
 
 - name: Update wp_postmeta
   community.mysql.mysql_query:
@@ -63,8 +63,8 @@
     login_host: "{{ tf_rds_endpoint }}"
     login_user: "{{ tf_username }}"
     login_password: "{{ tf_password }}"
-    query: "UPDATE wp_postmeta SET meta_value = replace(meta_value, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com');"
-  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+    query: "UPDATE wp_postmeta SET meta_value = replace(meta_value, '{{test.query_result[0][0].option_value}}', '{{tf_lb_domain}}');"
+  when: test.query_result[0][0].option_value != '{{tf_lb_domain}}'
 
 - name: Update wp_postmeta
   community.mysql.mysql_query:
@@ -72,7 +72,7 @@
     login_host: "{{ tf_rds_endpoint }}"
     login_user: "{{ tf_username }}"
     login_password: "{{ tf_password }}"
-    query: "UPDATE wp_comments SET comment_content = replace(comment_content, '{{test.query_result[0][0].option_value}}', 'http://Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com');"
-  when: test.query_result[0][0].option_value != 'Autoscaling-group-LB-456469980.us-east-1.elb.amazonaws.com'
+    query: "UPDATE wp_comments SET comment_content = replace(comment_content, '{{test.query_result[0][0].option_value}}', '{{tf_lb_domain}}');"
+  when: test.query_result[0][0].option_value != '{{tf_lb_domain}}'
 
 
